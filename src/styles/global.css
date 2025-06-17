@@ -69,19 +69,19 @@ body {
 .neon-text-cyan {
   color: var(--neon-cyan);
   text-shadow: 
-    0 0 5px var(--neon-cyan),
-    0 0 10px var(--neon-cyan),
-    0 0 15px var(--neon-cyan),
-    0 0 20px var(--neon-cyan);
+    0 0 0px var(--neon-cyan),
+    0 0 4px var(--neon-cyan),
+    0 0 7px var(--neon-cyan),
+    0 0 9px var(--neon-cyan);
 }
 
 .neon-text-pink {
   color: var(--neon-pink);
   text-shadow: 
-    0 0 5px var(--neon-pink),
-    0 0 10px var(--neon-pink),
-    0 0 15px var(--neon-pink),
-    0 0 20px var(--neon-pink);
+    0 0 0px var(--neon-pink),
+    0 0 4px var(--neon-pink),
+    0 0 7px var(--neon-pink),
+    0 0 9px var(--neon-pink);
 }
 
 .neon-text-purple {
@@ -132,9 +132,9 @@ body {
 .neon-btn-pink:hover {
   background: var(--neon-pink);
   box-shadow: 
-    0 0 10px var(--neon-pink),
-    0 0 20px var(--neon-pink),
-    0 0 30px var(--neon-pink);
+    0 0 1px var(--neon-pink),
+    0 0 2px var(--neon-pink),
+    0 0 3px var(--neon-pink);
 }
 
 .neon-btn-purple {
@@ -145,9 +145,9 @@ body {
 .neon-btn-purple:hover {
   background: var(--neon-purple);
   box-shadow: 
-    0 0 10px var(--neon-purple),
-    0 0 20px var(--neon-purple),
-    0 0 30px var(--neon-purple);
+    0 0 1px var(--neon-purple),
+    0 0 2px var(--neon-purple),
+    0 0 3px var(--neon-purple);
 }
 
 /* Neon Card Styles */

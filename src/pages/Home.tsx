@@ -303,7 +303,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
         </div>
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">
+            <h1 className="hero-title" >
               <span className="neon-text-cyan">NEON-DRENCHED</span>
               <br />
               <span className="neon-text-pink">MEME MARKETPLACE</span>
