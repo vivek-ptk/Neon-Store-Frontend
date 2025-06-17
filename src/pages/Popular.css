@@ -1,0 +1,444 @@
+.popular-page {
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 2rem;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(255, 215, 0, 0.3);
+  border-top: 3px solid var(--neon-yellow);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.title-icon {
+  color: var(--neon-yellow);
+  filter: drop-shadow(0 0 10px var(--neon-yellow));
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timeframe-selector {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.timeframe-btn {
+  background: rgba(26, 26, 46, 0.8);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 20px;
+  color: var(--neon-cyan);
+  padding: 10px 20px;
+  font-family: 'Orbitron', monospace;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timeframe-btn:hover {
+  background: var(--neon-cyan);
+  color: var(--dark-bg);
+  box-shadow: 0 0 15px var(--neon-cyan);
+}
+
+.timeframe-btn.active {
+  background: var(--neon-pink);
+  border-color: var(--neon-pink);
+  color: var(--dark-bg);
+  box-shadow: 0 0 20px var(--neon-pink);
+}
+
+.podium-section {
+  margin-bottom: 4rem;
+}
+
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.podium-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.rank-1 {
+  order: 2;
+  transform: scale(1.1);
+}
+
+.rank-2 {
+  order: 1;
+  transform: scale(0.95);
+}
+
+.rank-3 {
+  order: 3;
+  transform: scale(0.95);
+}
+
+.podium-rank {
+  margin-bottom: 1rem;
+}
+
+.rank-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.5rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.podium-meme {
+  background: rgba(26, 26, 46, 0.9);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 16px;
+  overflow: hidden;
+  width: 250px;
+  transition: all 0.3s ease;
+}
+
+.rank-1 .podium-meme {
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+.rank-2 .podium-meme {
+  border-color: var(--text-secondary);
+  box-shadow: 0 0 20px rgba(192, 192, 192, 0.3);
+}
+
+.rank-3 .podium-meme {
+  border-color: var(--neon-orange);
+  box-shadow: 0 0 20px rgba(255, 128, 0, 0.3);
+}
+
+.podium-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.podium-info {
+  padding: 1rem;
+}
+
+.podium-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.podium-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.memes-list {
+  margin-top: 4rem;
+}
+
+.list-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.memes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.meme-card {
+  background: rgba(26, 26, 46, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.meme-card:hover {
+  border-color: var(--neon-pink);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(255, 0, 128, 0.3);
+}
+
+.meme-rank-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 255, 255, 0.9);
+  color: var(--dark-bg);
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 2;
+  font-family: 'Orbitron', monospace;
+}
+
+.meme-image-container {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.meme-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.meme-card:hover .meme-image {
+  transform: scale(1.05);
+}
+
+.meme-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.meme-card:hover .meme-overlay {
+  opacity: 1;
+}
+
+.meme-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.action-btn {
+  background: rgba(26, 26, 46, 0.9);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 20px;
+  color: var(--neon-cyan);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.action-btn:hover {
+  background: var(--neon-cyan);
+  color: var(--dark-bg);
+  box-shadow: 0 0 15px var(--neon-cyan);
+}
+
+.download-btn {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+
+.download-btn:hover {
+  background: var(--neon-green);
+  box-shadow: 0 0 15px var(--neon-green);
+}
+
+.share-btn {
+  border-color: var(--neon-purple);
+  color: var(--neon-purple);
+}
+
+.share-btn:hover {
+  background: var(--neon-purple);
+  box-shadow: 0 0 15px var(--neon-purple);
+}
+
+.meme-content {
+  padding: 1.5rem;
+}
+
+.meme-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.meme-description {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.meme-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.meme-tag {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--neon-yellow);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.meme-tag:hover {
+  background: rgba(255, 0, 128, 0.2);
+  color: var(--neon-pink);
+}
+
+.meme-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.uploader-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.uploader-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--neon-yellow);
+}
+
+.uploader-name {
+  font-weight: 600;
+  color: var(--neon-yellow);
+  font-size: 0.9rem;
+}
+
+.upload-date {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .podium {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .podium-item {
+    order: initial !important;
+    transform: none !important;
+    margin-bottom: 2rem;
+  }
+
+  .podium-meme {
+    width: 300px;
+  }
+
+  .timeframe-selector {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .timeframe-btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+
+  .memes-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
