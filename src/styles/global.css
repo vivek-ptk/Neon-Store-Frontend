@@ -59,10 +59,10 @@ body {
 .neon-text {
   font-family: 'Orbitron', monospace;
   text-shadow: 
-    0 0 5px currentColor,
-    0 0 10px currentColor,
-    0 0 15px currentColor,
-    0 0 20px currentColor;
+    0 0 0px currentColor,
+    0 0 2px currentColor,
+    0 0 3px currentColor,
+    0 0 4px currentColor;
   animation: neon-flicker 2s ease-in-out infinite alternate;
 }
 
@@ -87,10 +87,10 @@ body {
 .neon-text-purple {
   color: var(--neon-purple);
   text-shadow: 
-    0 0 5px var(--neon-purple),
-    0 0 10px var(--neon-purple),
-    0 0 15px var(--neon-purple),
-    0 0 20px var(--neon-purple);
+    0 0 0px var(--neon-purple),
+    0 0 2px var(--neon-purple),
+    0 0 3px var(--neon-purple),
+    0 0 4px var(--neon-purple);
 }
 
 @keyframes neon-flicker {
@@ -118,9 +118,9 @@ body {
   background: var(--neon-cyan);
   color: var(--dark-bg);
   box-shadow: 
-    0 0 10px var(--neon-cyan),
-    0 0 20px var(--neon-cyan),
-    0 0 30px var(--neon-cyan);
+    0 0 0px var(--neon-cyan),
+    0 0 2px var(--neon-cyan),
+    0 0 3px var(--neon-cyan);
   transform: translateY(-2px);
 }
 
@@ -132,7 +132,7 @@ body {
 .neon-btn-pink:hover {
   background: var(--neon-pink);
   box-shadow: 
-    0 0 1px var(--neon-pink),
+    0 0 0px var(--neon-pink),
     0 0 2px var(--neon-pink),
     0 0 3px var(--neon-pink);
 }
