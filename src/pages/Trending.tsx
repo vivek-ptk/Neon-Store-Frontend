@@ -11,11 +11,9 @@ interface Meme {
   tags: string[];
   upvotes: number;
   downloads: number;
-  uploadedBy: {
-    name: string;
-    avatar: string;
-  };
   createdAt: string;
+  trendingScore?: number;
+  daysSinceCreation?: number;
 }
 
 const Trending: React.FC = () => {
@@ -31,11 +29,42 @@ const Trending: React.FC = () => {
   const fetchTrendingMemes = async () => {
     setLoading(true);
     try {
-      // Replace with actual API call to /api/trending
-      // const response = await fetch('/api/trending');
-      // const data = await response.json();
+      const response = await fetch('http://localhost:5000/api/trending', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch trending memes');
+      }
+
+      if (data.success && data.trendingMemes) {
+        // Transform API response to match Meme interface
+        const memes: Meme[] = data.trendingMemes.map((meme: any) => ({
+          id: meme.id,
+          image_url: meme.image_url,
+          title: meme.description || 'Untitled Meme', // Use description as title
+          description: meme.description || '',
+          tags: meme.tags || [],
+          upvotes: meme.upvotes || 0,
+          downloads: meme.downloads || 0,
+          createdAt: meme.createdAt,
+          trendingScore: meme.trendingScore,
+          daysSinceCreation: meme.daysSinceCreation
+        }));
+        
+        setMemes(memes);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Failed to fetch trending memes:', error);
       
-      // Mock data for now
+      // Fallback to mock memes if API fails
       const mockMemes: Meme[] = [
         {
           id: '1',
@@ -45,7 +74,6 @@ const Trending: React.FC = () => {
           tags: ['neon', 'rgb', 'gaming', 'viral'],
           upvotes: 2847,
           downloads: 1923,
-          uploadedBy: { name: 'NeonMaster', avatar: 'https://via.placeholder.com/40x40/00ffff/000000?text=NM' },
           createdAt: '2025-06-15T10:30:00Z'
         },
         {
@@ -56,7 +84,6 @@ const Trending: React.FC = () => {
           tags: ['cyberpunk', 'future', 'tech', 'ai'],
           upvotes: 2156,
           downloads: 1654,
-          uploadedBy: { name: 'CyberVibe', avatar: 'https://via.placeholder.com/40x40/ff0080/ffffff?text=CV' },
           createdAt: '2025-06-14T15:45:00Z'
         },
         {
@@ -67,48 +94,11 @@ const Trending: React.FC = () => {
           tags: ['purple', 'power', 'energy', 'mood'],
           upvotes: 1834,
           downloads: 1287,
-          uploadedBy: { name: 'PowerUser', avatar: 'https://via.placeholder.com/40x40/8000ff/ffffff?text=PU' },
           createdAt: '2025-06-13T08:20:00Z'
-        },
-        {
-          id: '4',
-          image_url: 'https://via.placeholder.com/400x400/00ff00/000000?text=Matrix+Code+4',
-          title: 'Matrix Vibes',
-          description: 'There is no spoon',
-          tags: ['matrix', 'code', 'green', 'hacker'],
-          upvotes: 1675,
-          downloads: 1098,
-          uploadedBy: { name: 'Neo2025', avatar: 'https://via.placeholder.com/40x40/00ff00/000000?text=N2' },
-          createdAt: '2025-06-12T20:15:00Z'
-        },
-        {
-          id: '5',
-          image_url: 'https://via.placeholder.com/400x400/ffff00/000000?text=Electric+5',
-          title: 'Electric Mood',
-          description: 'Charged up and ready to go',
-          tags: ['electric', 'energy', 'yellow', 'lightning'],
-          upvotes: 1456,
-          downloads: 892,
-          uploadedBy: { name: 'ElectricBolt', avatar: 'https://via.placeholder.com/40x40/ffff00/000000?text=EB' },
-          createdAt: '2025-06-11T12:00:00Z'
-        },
-        {
-          id: '6',
-          image_url: 'https://via.placeholder.com/400x400/ff8000/ffffff?text=Fire+Meme+6',
-          title: 'Fire in the Code',
-          description: 'When your code compiles on first try',
-          tags: ['fire', 'coding', 'programming', 'success'],
-          upvotes: 1298,
-          downloads: 734,
-          uploadedBy: { name: 'CodeFire', avatar: 'https://via.placeholder.com/40x40/ff8000/ffffff?text=CF' },
-          createdAt: '2025-06-10T16:30:00Z'
         }
       ];
-      
       setMemes(mockMemes);
-    } catch (error) {
-      console.error('Failed to fetch trending memes:', error);
-      toast.error('Failed to load trending memes');
+      toast.error('Failed to load trending memes - using demo data');
     } finally {
       setLoading(false);
     }
@@ -116,37 +106,146 @@ const Trending: React.FC = () => {
 
   const handleUpvote = async (memeId: string) => {
     try {
-      // API call to upvote meme
-      toast.success('Meme upvoted!');
-      // Update local state
-      setMemes(memes.map(meme => 
-        meme.id === memeId 
-          ? { ...meme, upvotes: meme.upvotes + 1 }
-          : meme
-      ));
+      const response = await fetch('http://localhost:5000/api/update-upvote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memeId: memeId
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upvote meme');
+      }
+
+      if (data.success) {
+        toast.success('Meme upvoted!');
+        
+        // Update local state with the new upvote count from API response
+        setMemes(memes.map(meme => 
+          meme.id === memeId 
+            ? { ...meme, upvotes: data.meme?.upvotes || meme.upvotes + 1 }
+            : meme
+        ));
+      } else {
+        throw new Error(data.message || 'Upvote failed');
+      }
     } catch (error) {
-      toast.error('Failed to upvote meme');
+      console.error('Error upvoting meme:', error);
+      toast.error(`Failed to upvote meme`);
     }
   };
 
   const handleDownload = async (meme: Meme) => {
     try {
-      // API call to track download and get image
-      const link = document.createElement('a');
-      link.href = meme.image_url;
-      link.download = `${meme.title.replace(/\s+/g, '_')}.jpg`;
-      link.click();
+      // Track download with API first
+      const response = await fetch('http://localhost:5000/api/track-downloads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memeId: meme.id
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to track download');
+      }
+
+      // Download the image to local device
+      try {
+        // Fetch the image as a blob
+        const imageResponse = await fetch(meme.image_url);
+        const imageBlob = await imageResponse.blob();
+        
+        // Create a download link
+        const downloadUrl = URL.createObjectURL(imageBlob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        // Get file extension from URL or default to jpg
+        const urlParts = meme.image_url.split('.');
+        const extension = urlParts.length > 1 ? urlParts[urlParts.length - 1].split('?')[0] : 'jpg';
+        
+        link.download = `${meme.title.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')}.${extension}`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the object URL
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast.success('Meme downloaded to your device!');
+      } catch (downloadError) {
+        console.error('Error downloading image:', downloadError);
+        toast.error('Failed to download image to device');
+        return;
+      }
       
-      toast.success('Meme downloaded!');
-      
-      // Update download count
-      setMemes(memes.map(m => 
-        m.id === meme.id 
-          ? { ...m, downloads: m.downloads + 1 }
-          : m
-      ));
+      if (data.success) {
+        // Update download count with API response or increment locally
+        setMemes(memes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: data.meme?.downloads || m.downloads + 1 }
+            : m
+        ));
+      } else {
+        // Still update locally if API tracking fails but download succeeded
+        setMemes(memes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        ));
+      }
     } catch (error) {
-      toast.error('Failed to download meme');
+      console.error('Error tracking download:', error);
+      
+      // Still allow download even if tracking fails
+      try {
+        // Fetch the image as a blob
+        const imageResponse = await fetch(meme.image_url);
+        const imageBlob = await imageResponse.blob();
+        
+        // Create a download link
+        const downloadUrl = URL.createObjectURL(imageBlob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        // Get file extension from URL or default to jpg
+        const urlParts = meme.image_url.split('.');
+        const extension = urlParts.length > 1 ? urlParts[urlParts.length - 1].split('?')[0] : 'jpg';
+        
+        link.download = `${meme.title.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')}.${extension}`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the object URL
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast.success('Meme downloaded! (tracking failed)');
+        
+        // Update local count since tracking failed
+        setMemes(memes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        ));
+      } catch (downloadError) {
+        console.error('Error downloading meme:', downloadError);
+        toast.error('Failed to download meme to device');
+      }
     }
   };
 
@@ -208,7 +307,7 @@ const Trending: React.FC = () => {
           </p>
         </div>
 
-        {/* Filters and Sort */}
+        {/* Controls remain the same */}
         <div className="controls">
           <div className="sort-controls">
             <Filter size={20} />
@@ -234,7 +333,7 @@ const Trending: React.FC = () => {
           </div>
         </div>
 
-        {/* Memes Grid */}
+        {/* Updated Memes Grid - removed uploader info since API doesn't provide it */}
         <div className="memes-grid">
           {sortedMemes.map((meme) => (
             <div key={meme.id} className="meme-card">
@@ -277,17 +376,19 @@ const Trending: React.FC = () => {
                 </div>
                 
                 <div className="meme-footer">
-                  <div className="uploader-info">
-                    <img src={meme.uploadedBy.avatar} alt={meme.uploadedBy.name} className="uploader-avatar" />
-                    <span className="uploader-name">{meme.uploadedBy.name}</span>
-                  </div>
                   <span className="upload-date">
                     {new Date(meme.createdAt).toLocaleDateString()}
                   </span>
+                  {meme.trendingScore !== undefined && (
+                    <span className="trending-score">
+                      Score: {meme.trendingScore}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-          ))}        </div>
+          ))}
+        </div>
       </div>
     </div>
   );

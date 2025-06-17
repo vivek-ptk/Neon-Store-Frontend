@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, User, LogIn, Menu, X, Sparkles } from 'lucide-react';
 import './Navbar.css';
 
@@ -12,6 +12,7 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenMemeCreator }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,19 +22,22 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenMemeCreator }) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
   const navLinks = [
     { name: 'Home', path: '/' },
+    { name: 'Explore', path: '/explore' },
     { name: 'Trending', path: '/trending' },
-    { name: 'Popular', path: '/popular' },
+    // { name: 'Popular', path: '/popular' },
     { name: 'Meme Storm', path: '/meme-storm' },
     { name: 'Meme Evolution', path: '/meme-evolution' },
   ];
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality
-    console.log('Searching for:', searchQuery);
+    if (searchQuery.trim()) {
+      // Navigate to explore page with search query
+      navigate(`/explore?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery(''); // Clear search input
+      setIsMobileMenuOpen(false); // Close mobile menu if open
+    }
   };
 
   return (
@@ -86,11 +90,6 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenMemeCreator }) => {
               <span className="desktop-only">Create</span>
             </button>
 
-            {/* For now, show login button - will be replaced with OAuth */}
-            <button className="auth-btn">
-              <LogIn size={20} />
-              <span className="desktop-only">Sign In</span>
-            </button>
 
             {/* Mobile Menu Toggle */}
             <button

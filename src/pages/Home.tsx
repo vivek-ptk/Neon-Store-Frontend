@@ -28,7 +28,38 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
 
   const fetchTrendingMemes = async () => {
     try {
-      // Replace with actual API call
+      const response = await fetch('http://localhost:5000/api/trending', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch trending memes');
+      }
+
+      if (data.success && data.trendingMemes) {
+        // Transform API response to match Meme interface
+        const memes: Meme[] = data.trendingMemes.map((meme: any) => ({
+          id: meme.id,
+          image_url: meme.image_url,
+          title: meme.description || 'Untitled Meme', // Use description as title
+          tags: meme.tags || [],
+          upvotes: meme.upvotes || 0,
+          downloads: meme.downloads || 0
+        }));
+        
+        setTrendingMemes(memes);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Failed to fetch trending memes:', error);
+      
+      // Fallback to mock memes if API fails
       const mockMemes: Meme[] = [
         {
           id: '1',
@@ -56,18 +87,40 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
         }
       ];
       setTrendingMemes(mockMemes);
-    } catch (error) {
-      console.error('Failed to fetch trending memes:', error);
     }
   };
 
   const fetchPopularTags = async () => {
     try {
-      // Replace with actual API call
-      const mockTags = ['funny', 'neon', 'cyber', 'ai', 'future', 'memes', 'trending', 'viral'];
-      setPopularTags(mockTags);
+      const response = await fetch('http://localhost:5000/api/popular', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch popular tags');
+      }
+
+      if (data.success && data.popularTags) {
+        // Extract tag names from the API response and sort by count
+        const tags = data.popularTags
+          .sort((a: any, b: any) => b.count - a.count) // Sort by popularity (count)
+          .map((tagData: any) => tagData.tag);
+        
+        setPopularTags(tags);
+      } else {
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
       console.error('Failed to fetch popular tags:', error);
+      
+      // Fallback to mock tags if API fails
+      const mockTags = ['funny', 'neon', 'cyber', 'ai', 'future', 'memes', 'trending', 'viral'];
+      setPopularTags(mockTags);
     }
   };
 
@@ -90,10 +143,11 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
               Dive into the electric world of next-gen memes where creativity meets technology
             </p>
             <div className="hero-buttons">
-              <Link to="/trending" className="neon-btn neon-btn-cyan">
+              <Link to="/trending" style={{display:"flex", justifyContent:"center", alignItems:"center", gap:"10px"}} className="neon-btn neon-btn-cyan">
                 <TrendingUp size={20} />
                 Explore Trending
-              </Link>              <button className="neon-btn neon-btn-pink" onClick={onOpenMemeCreator}>
+              </Link>              
+              <button style={{display:"flex", justifyContent:"center", alignItems:"center", gap:"10px"}} className="neon-btn neon-btn-pink" onClick={onOpenMemeCreator}>
                 <Sparkles size={20} />
                 Create Meme
               </button>

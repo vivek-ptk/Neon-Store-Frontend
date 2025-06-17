@@ -54,7 +54,7 @@
     linear-gradient(135deg, rgba(128, 0, 255, 0.1) 10%, transparent 50%),
     linear-gradient(225deg, rgba(255, 215, 0, 0.08) 0%, transparent 30%);
   animation: gradient-shift 12s ease-in-out infinite, background-wave 8s ease-in-out infinite;
-  filter: blur(0.5px);
+  filter: blur(0);
 }
 
 @keyframes gradient-shift {
@@ -167,7 +167,7 @@
   z-index: 10;
   position: relative;
   animation: hero-entrance 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(0);
   padding: 2rem;
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.1);
@@ -213,9 +213,9 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: 
-    drop-shadow(0 0 30px rgba(0, 255, 255, 0.7))
-    drop-shadow(0 0 60px rgba(255, 0, 128, 0.4));
+  filter:
+  drop-shadow(0 0 10px rgba(0, 255, 255, 0.7)) /* Smaller blur */
+  drop-shadow(0 0 20px rgba(255, 0, 128, 0.4)); /* Smaller blur */
   animation: 
     neon-pulse 5s ease-in-out infinite, 
     title-glow 4s ease-in-out infinite,

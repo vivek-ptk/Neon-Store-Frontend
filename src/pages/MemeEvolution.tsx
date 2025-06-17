@@ -91,23 +91,30 @@ const MemeEvolution: React.FC = () => {
     
     try {
       const formData = new FormData();
-      formData.append('image', selectedFile);
+      formData.append('meme', selectedFile);
 
-      // Replace with actual API call to /api/meme-evolution
-      const response = await fetch('/api/meme-evolution', {
+      const response = await fetch('http://localhost:5000/api/meme-evolution', {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Failed to analyze meme');
-
       const data = await response.json();
-      setEvolutionData(data);
-      toast.success('Meme evolution analysis complete!');
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to analyze meme');
+      }
+
+      if (data.success) {
+        setEvolutionData(data.evolution);
+        toast.success('Meme evolution analysis complete!');
+        console.log('Analysis metadata:', data.metadata);
+      } else {
+        throw new Error(data.message || 'Analysis failed');
+      }
     } catch (error) {
       console.error('Error analyzing meme:', error);
       
-      // Mock data for demonstration
+      // Mock data for demonstration when API fails
       const mockData: EvolutionData = {
         origin: {
           date: '2020-03-15',
@@ -177,7 +184,8 @@ const MemeEvolution: React.FC = () => {
       };
       
       setEvolutionData(mockData);
-      toast.success('Meme evolution analysis complete! (Demo data)');
+      toast.error(`Failed to analyze meme`);
+      toast.success('Using demo data instead');
     } finally {
       setIsAnalyzing(false);
     }

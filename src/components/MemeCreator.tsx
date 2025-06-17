@@ -149,24 +149,31 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
         if (!blob) return;
 
         const formData = new FormData();
-        formData.append('image', blob);
+        formData.append('image', blob, 'meme-image.jpeg');
 
-        // Replace with actual API call to /api/caption-generator
-        const response = await fetch('/api/caption-generator', {
+        // Use the correct API endpoint
+        const response = await fetch('http://localhost:5000/api/caption-generator', {
           method: 'POST',
           body: formData,
         });
 
-        if (!response.ok) throw new Error('Failed to generate captions');
-
         const data = await response.json();
-        setSuggestedCaptions(data.captions || []);
-        toast.success('Captions generated!');
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to generate captions');
+        }
+
+        if (data.success) {
+          setSuggestedCaptions(data.captions || []);
+          toast.success(`Generated ${data.total || data.captions?.length || 0} captions!`);
+        } else {
+          throw new Error(data.message || 'Caption generation failed');
+        }
       }, 'image/jpeg', 0.8);
     } catch (error) {
       console.error('Error generating captions:', error);
       
-      // Mock captions for demonstration
+      // Mock captions for demonstration when API fails
       const mockCaptions = [
         "When you finally understand the assignment",
         "POV: You're winning at life",
@@ -176,7 +183,8 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
       ];
       
       setSuggestedCaptions(mockCaptions);
-      toast.success('Captions generated! (Demo)');
+      toast.error(`Failed to generate captions`);
+      toast.success('Using demo captions instead');
     } finally {
       setIsGeneratingCaption(false);
     }
@@ -198,10 +206,64 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
   };
 
   const applyCaption = (caption: string) => {
-    if (!headerText) {
-      setHeaderText(caption);
-    } else {
-      setFooterText(caption);
+  if (!caption) {
+    setHeaderText("");
+    setFooterText("");
+    return;
+  }
+
+  const words = caption.split(' ');
+  const midPoint = Math.ceil(words.length / 2);
+
+  const headerPart = words.slice(0, midPoint).join(' ');
+  const footerPart = words.slice(midPoint).join(' ');
+
+  setHeaderText(headerPart);
+  setFooterText(footerPart);
+};
+
+  const uploadMeme = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      toast.error('No meme to upload');
+      return;
+    }
+
+    try {
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+
+        const formData = new FormData();
+        formData.append('meme', blob, 'neon-meme.png');
+        
+        // Create description from header and footer text
+        const description = `${headerText} ${footerText}`.trim();
+        if (description) {
+          formData.append('description', description);
+        }
+
+        // Use the correct API endpoint
+        const response = await fetch('http://localhost:5000/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to upload meme');
+        }
+
+        if (data.success) {
+          toast.success('Meme uploaded successfully!');
+          console.log('Uploaded meme:', data.meme);
+        } else {
+          throw new Error(data.message || 'Upload failed');
+        }
+      }, 'image/png', 0.9);
+    } catch (error) {
+      console.error('Error uploading meme:', error);
+      toast.error(`Failed to upload meme`);
     }
   };
 
@@ -440,16 +502,26 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
               )}
             </div>
 
-            {/* Download */}
+            
             <div className="control-section">
-              <button 
-                className="download-btn"
-                onClick={downloadMeme}
-                disabled={!selectedImage}
-              >
-                <Download size={20} />
-                Download Meme
-              </button>
+              <div className="button-group-vertical">
+                <button 
+                  className="upload-meme-btn"
+                  onClick={uploadMeme}
+                  disabled={!selectedImage}
+                >
+                  <Upload size={20} />
+                  Upload Meme
+                </button>
+                <button 
+                  className="download-btn"
+                  onClick={downloadMeme}
+                  disabled={!selectedImage}
+                >
+                  <Download size={20} />
+                  Download Meme
+                </button>
+              </div>
             </div>
           </div>
 

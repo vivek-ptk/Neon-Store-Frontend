@@ -32,11 +32,14 @@
   display: flex;
   align-items: center;
   gap: 0.2rem;
+  margin-right: 30px;
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .nav-link {
@@ -247,9 +250,7 @@
   box-shadow: 0 0 15px var(--neon-pink);
 }
 
-.desktop-only {
-  display: block;
-}
+
 
 .mobile-only {
   display: none;

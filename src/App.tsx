@@ -7,6 +7,7 @@ import Trending from './pages/Trending';
 import Popular from './pages/Popular';
 import MemeStorm from './pages/MemeStorm';
 import MemeEvolution from './pages/MemeEvolution';
+import Explore from './pages/Explore';
 import MemeCreator from './components/MemeCreator';
 import './styles/global.css';
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/popular" element={<Popular />} />
             <Route path="/meme-storm" element={<MemeStorm />} />
             <Route path="/meme-evolution" element={<MemeEvolution />} />
+            <Route path="/explore" element={<Explore />} />
           </Routes>
         </main>
         <MemeCreator 

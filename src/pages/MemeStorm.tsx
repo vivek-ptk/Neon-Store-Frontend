@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Zap, Sparkles, Brain } from 'lucide-react';
+import { Send, Bot, User, Zap, Sparkles, Lightbulb, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './MemeStorm.css';
 
@@ -15,7 +15,7 @@ const MemeStorm: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Welcome to Meme Storm! ⚡ I'm your AI meme assistant ready to help you brainstorm, analyze, and create the next viral sensation. What kind of meme magic shall we conjure today?",
+      text: "Hey there, future meme legend! 🚀 I'm your AI meme generator, ready to transform any situation, idea, or random thought into the next viral sensation. Whether you're dealing with Monday blues, celebrating a win, or just had a weird shower thought - I'll help you turn it into meme gold! What's your story?",
       sender: 'ai',
       timestamp: new Date()
     }
@@ -60,30 +60,67 @@ const MemeStorm: React.FC = () => {
     setMessages(prev => [...prev, typingMessage]);
 
     try {
-      // Replace with actual API call to /api/meme-storm
-      const response = await fetch('/api/meme-storm', {
+      const response = await fetch('http://localhost:5000/api/meme-storm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: userMessage.text }),
+        body: JSON.stringify({ ideas: userMessage.text }),
       });
 
-      if (!response.ok) throw new Error('Failed to get AI response');
-
       const data = await response.json();
-      
-      // Remove typing indicator and add actual response
-      setMessages(prev => prev.filter(m => m.id !== 'typing'));
-      
-      const aiMessage: Message = {
-        id: Date.now().toString(),
-        text: data.response || "I'm experiencing some technical difficulties. Try asking about meme trends, creative ideas, or viral content strategies!",
-        sender: 'ai',
-        timestamp: new Date()
-      };
 
-      setMessages(prev => [...prev, aiMessage]);
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to get AI response');
+      }
+
+      // Remove typing indicator
+      setMessages(prev => prev.filter(m => m.id !== 'typing'));
+
+      if (data.success && data.memeConcepts && data.memeConcepts.length > 0) {
+        // Add introduction message
+        const introMessage: Message = {
+          id: `intro-${Date.now()}`,
+          text: `🚀 Amazing! I've generated ${data.memeConcepts.length} viral meme concepts for you! Here they are:`,
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, introMessage]);
+
+        // Add each meme concept as separate messages with a small delay for better UX
+        data.memeConcepts.forEach((concept: any, index: number) => {
+          setTimeout(() => {
+            const conceptMessage: Message = {
+              id: `concept-${Date.now()}-${index}`,
+              text: `🎨 **Meme Concept ${index + 1}:**\n\n📷 **Image Description:**\n${concept['image-description']}\n\n💬 **Caption:**\n"${concept.caption}"`,
+              sender: 'ai',
+              timestamp: new Date()
+            };
+            setMessages(prev => [...prev, conceptMessage]);
+          }, index * 1000); // 1 second delay between each concept
+        });
+
+        // Add closing message after all concepts
+        setTimeout(() => {
+          const closingMessage: Message = {
+            id: `closing-${Date.now()}`,
+            text: "✨ There you have it! Which one's your favorite? Feel free to describe another situation for more viral meme ideas! 🔥",
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, closingMessage]);
+        }, data.memeConcepts.length * 1000 + 500);
+
+      } else {
+        // Fallback message if no concepts generated
+        const fallbackMessage: Message = {
+          id: Date.now().toString(),
+          text: "Hmm, let me cook up something viral for you! Try describing your situation in more detail - the funnier or more relatable, the better the meme will be!",
+          sender: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, fallbackMessage]);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       
@@ -92,13 +129,13 @@ const MemeStorm: React.FC = () => {
       
       const errorMessage: Message = {
         id: Date.now().toString(),
-        text: "Sorry, I'm having trouble connecting right now. But I can still help you brainstorm! Try asking me about current meme trends, creative concepts, or what makes content go viral!",
+        text: "Oops! My meme generator is having a moment 😅 But don't worry - I can still help you brainstorm! Try describing your situation or idea, and I'll help you craft the perfect meme concept manually!",
         sender: 'ai',
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, errorMessage]);
-      toast.error('Failed to get AI response');
+      toast.error('Meme generator temporarily offline');
     } finally {
       setIsLoading(false);
     }
@@ -112,11 +149,11 @@ const MemeStorm: React.FC = () => {
   };
 
   const suggestedPrompts = [
-    "Generate meme ideas about AI",
-    "What's trending in memes right now?",
-    "Create a cyberpunk meme concept",
-    "Analyze viral meme patterns",
-    "Help me brainstorm neon-themed memes"
+    "I just woke up at 6 AM for a 9 AM meeting that got cancelled",
+    "When you order food delivery and realize you have no money left",
+    "My boss said 'quick meeting' and it's been 2 hours",
+    "That moment when you close 20 browser tabs and your laptop still runs slow",
+  
   ];
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -130,13 +167,18 @@ const MemeStorm: React.FC = () => {
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">
-            <Zap className="title-icon" size={40} />
-            <span className="neon-text-cyan">Meme</span>
-            <span className="neon-text-pink"> Storm</span>
+            <TrendingUp className="title-icon" size={40} />
+            <span className="neon-text-cyan">Viral</span>
+            <span className="neon-text-pink"> Meme</span>
+            <span className="neon-text-purple"> Generator</span>
           </h1>
           <p className="page-subtitle">
-            Unleash the power of AI to brainstorm, analyze, and create viral meme content
+            Transform any situation, idea, or life moment into the next viral meme sensation
           </p>
+          <div className="page-description">
+            <p>Got a funny situation? Weird experience? Random shower thought? 
+               Share it with me and I'll help you turn it into meme magic! ✨</p>
+          </div>
         </div>
 
         {/* Chat Container */}
@@ -164,7 +206,35 @@ const MemeStorm: React.FC = () => {
                         <span></span>
                       </div>
                     ) : (
-                      message.text
+                      <div className="message-content-formatted">
+                        {message.text.split('\n').map((line, index) => {
+                          // Handle bold text formatting
+                          if (line.includes('**') && line.includes('**')) {
+                            const parts = line.split('**');
+                            return (
+                              <div key={index} className="message-line">
+                                {parts.map((part, partIndex) => (
+                                  partIndex % 2 === 1 ? 
+                                    <strong key={partIndex} className="message-bold">{part}</strong> : 
+                                    <span key={partIndex}>{part}</span>
+                                ))}
+                              </div>
+                            );
+                          }
+                          // Handle emoji prefixed lines
+                          else if (line.trim().startsWith('🎨') || line.trim().startsWith('📷') || line.trim().startsWith('💬')) {
+                            return <div key={index} className="message-line concept-section">{line}</div>;
+                          }
+                          // Handle quoted text (captions)
+                          else if (line.trim().startsWith('"') && line.trim().endsWith('"')) {
+                            return <div key={index} className="message-line caption-text">{line}</div>;
+                          }
+                          // Regular lines
+                          else {
+                            return line.trim() ? <div key={index} className="message-line">{line}</div> : <br key={index} />;
+                          }
+                        })}
+                      </div>
                     )}
                   </div>
                   <div className="message-timestamp">
@@ -180,8 +250,8 @@ const MemeStorm: React.FC = () => {
           {messages.length === 1 && (
             <div className="suggested-prompts">
               <h3 className="prompts-title">
-                <Sparkles size={20} />
-                Try these prompts:
+                <Lightbulb size={20} />
+                Try these relatable situations:
               </h3>
               <div className="prompts-grid">
                 {suggestedPrompts.map((prompt, index) => (
@@ -190,7 +260,7 @@ const MemeStorm: React.FC = () => {
                     className="prompt-btn"
                     onClick={() => handleSuggestedPrompt(prompt)}
                   >
-                    <Brain size={16} />
+                    <Sparkles size={16} />
                     {prompt}
                   </button>
                 ))}
@@ -206,9 +276,9 @@ const MemeStorm: React.FC = () => {
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me about memes, trends, or creative ideas..."
+                placeholder="Describe your situation, idea, or experience... (e.g., 'When you pretend to work from home but spend 3 hours choosing the perfect Zoom background')"
                 className="message-input"
-                rows={1}
+                rows={2}
                 disabled={isLoading}
               />
               <button
@@ -216,9 +286,13 @@ const MemeStorm: React.FC = () => {
                 className={`send-btn ${inputText.trim() && !isLoading ? 'active' : ''}`}
                 disabled={!inputText.trim() || isLoading}
               >
-                <Send size={20} />
+                <Zap size={20} />
               </button>
-            </div>        </form>
+            </div>
+            <div className="input-hint">
+              <p>🚀 Share your story and I'll create a viral meme concept for you!</p>
+            </div>
+          </form>
         </div>
       </div>
     </div>
