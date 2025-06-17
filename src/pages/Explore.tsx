@@ -4,6 +4,7 @@ import { Search, TrendingUp, Zap, ArrowLeft, Filter, ChevronLeft, ChevronRight, 
 import toast from 'react-hot-toast';
 import './Explore.css';
 
+
 interface Meme {
   id: string;
   image_url: string;
@@ -53,7 +54,8 @@ const Explore: React.FC = () => {
     setLoading(true);
     try {
       const limit = 20;
-      let apiUrl = `http://localhost:5000/api/memes?page=${page}&limit=${limit}`;
+      console.log('REACT_APP_BACKEND_URL', process.env.REACT_APP_BACKEND_URL);
+      let apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/memes?page=${page}&limit=${limit}`;
       
       // Add sort parameter (map relevance to recent for general browse)
       const sortParam = sortBy === 'relevance' ? 'recent' : sortBy;
@@ -120,7 +122,7 @@ const Explore: React.FC = () => {
       const encodedQuery = encodeURIComponent(searchQuery);
       const limit = 20; // Items per page
       
-      const response = await fetch(`http://localhost:5000/api/search?q=${encodedQuery}&page=${page}&limit=${limit}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/search?q=${encodedQuery}&page=${page}&limit=${limit}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -194,7 +196,7 @@ const Explore: React.FC = () => {
   };
   const handleUpvote = async (memeId: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/upvote', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upvote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -232,7 +234,7 @@ const Explore: React.FC = () => {
   const handleDownload = async (meme: Meme) => {
     try {
       // Track download with API first
-      const response = await fetch('http://localhost:5000/api/track-downloads', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/track-downloads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

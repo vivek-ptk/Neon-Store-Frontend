@@ -93,7 +93,7 @@ const MemeEvolution: React.FC = () => {
       const formData = new FormData();
       formData.append('meme', selectedFile);
 
-      const response = await fetch('http://localhost:5000/api/meme-evolution', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/meme-evolution`, {
         method: 'POST',
         body: formData,
       });

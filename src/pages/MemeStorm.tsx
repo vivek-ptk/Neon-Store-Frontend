@@ -60,7 +60,7 @@ const MemeStorm: React.FC = () => {
     setMessages(prev => [...prev, typingMessage]);
 
     try {
-      const response = await fetch('http://localhost:5000/api/meme-storm', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/meme-storm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

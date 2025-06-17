@@ -29,7 +29,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
 
   const handleUpvote = async (memeId: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/upvote', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upvote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
   const handleDownload = async (meme: Meme) => {
     try {
       // Track download with API first
-      const response = await fetch('http://localhost:5000/api/track-downloads', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/track-downloads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +197,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
 
   const fetchTrendingMemes = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/trending', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/trending`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +261,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
 
   const fetchPopularTags = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/popular', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/popular`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
