@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, use } from 'react';
 import { 
   X, Upload, Download, Type, Palette, Sliders, Wand2, 
   AlignCenter, AlignLeft, AlignRight, Bold, Italic 
@@ -29,7 +29,22 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
   const [imageFilter, setImageFilter] = useState('none');
   const [isGeneratingCaption, setIsGeneratingCaption] = useState(false);
   const [suggestedCaptions, setSuggestedCaptions] = useState<string[]>([]);
-  
+  const [isUploading, setIsUploading] = useState(false);
+  useEffect(() => {
+    setHeaderText('');
+    setFooterText('');
+    setFontSize(36);
+    setFontFamily('Impact');
+    setImageFilter('none');
+    setTextColor('#ffffff');
+    setStrokeColor('#000000');
+    setStrokeWidth(2);
+    setTextAlign('center');
+    setSuggestedCaptions([]);
+    setSelectedImage('');
+    setIsGeneratingCaption(false);
+
+  },[isOpen]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,9 +60,9 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
 
   const filterOptions = [
     { name: 'None', value: 'none' },
-    { name: 'Neon Glow', value: 'drop-shadow(0 0 10px #00ffff)' },
-    { name: 'Pink Glow', value: 'drop-shadow(0 0 10px #ff0080)' },
-    { name: 'Purple Glow', value: 'drop-shadow(0 0 10px #8000ff)' },
+    // { name: 'Neon Glow', value: 'drop-shadow(0 0 10px #00ffff)' },
+    // { name: 'Pink Glow', value: 'drop-shadow(0 0 10px #ff0080)' },
+    // { name: 'Purple Glow', value: 'drop-shadow(0 0 10px #8000ff)' },
     { name: 'Sepia', value: 'sepia(100%)' },
     { name: 'Grayscale', value: 'grayscale(100%)' },
     { name: 'Blur', value: 'blur(2px)' },
@@ -160,6 +175,7 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
         const data = await response.json();
 
         if (!response.ok) {
+          setIsGeneratingCaption(false);
           throw new Error(data.message || 'Failed to generate captions');
         }
 
@@ -169,10 +185,11 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
         } else {
           throw new Error(data.message || 'Caption generation failed');
         }
+        setIsGeneratingCaption(false);
       }, 'image/jpeg', 0.8);
     } catch (error) {
       console.error('Error generating captions:', error);
-      
+      setIsGeneratingCaption(false);
       // Mock captions for demonstration when API fails
       const mockCaptions = [
         "When you finally understand the assignment",
@@ -185,9 +202,7 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
       setSuggestedCaptions(mockCaptions);
       toast.error(`Failed to generate captions`);
       toast.success('Using demo captions instead');
-    } finally {
-      setIsGeneratingCaption(false);
-    }
+    } 
   };
 
   const downloadMeme = () => {
@@ -232,7 +247,7 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
     try {
       canvas.toBlob(async (blob) => {
         if (!blob) return;
-
+        setIsUploading(true);
         const formData = new FormData();
         formData.append('meme', blob, 'neon-meme.png');
         
@@ -251,13 +266,16 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
         const data = await response.json();
 
         if (!response.ok) {
+          setIsUploading(false);
           throw new Error(data.message || 'Failed to upload meme');
         }
 
         if (data.success) {
           toast.success('Meme uploaded successfully!');
+          setIsUploading(false);
           console.log('Uploaded meme:', data.meme);
         } else {
+          setIsUploading(false);
           throw new Error(data.message || 'Upload failed');
         }
       }, 'image/png', 0.9);
@@ -508,7 +526,7 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
                 <button 
                   className="upload-meme-btn"
                   onClick={uploadMeme}
-                  disabled={!selectedImage}
+                  disabled={!selectedImage || isUploading}
                 >
                   <Upload size={20} />
                   Upload Meme
@@ -540,7 +558,8 @@ const MemeCreator: React.FC<MemeCreatorProps> = ({
                   <p>Upload an image to start creating</p>
                 </div>
               )}
-            </div>        </div>
+            </div>        
+          </div>
         </div>
       </div>
     </div>

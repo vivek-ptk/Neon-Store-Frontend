@@ -566,10 +566,19 @@
 
 .meme-image-container {
   position: relative;
-  aspect-ratio: 1;
+  width: 100%; /* or any fixed width like 300px */
   overflow: hidden;
   background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 128, 0.1));
 }
+
+.meme-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain
+}
+
+
 
 .meme-image-container::before {
   content: '';
@@ -589,13 +598,7 @@
   opacity: 0.5;
 }
 
-.meme-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  filter: brightness(0.9) contrast(1.1);
-}
+
 
 .meme-card:hover .meme-image {
   transform: scale(1.1) rotate(1deg);
