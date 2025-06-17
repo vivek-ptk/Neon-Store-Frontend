@@ -1268,3 +1268,92 @@
     border-color: rgba(0, 255, 255, 0.4);
   }
 }
+
+/* Add to Home.css */
+.clickable-tag {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.clickable-tag:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 8px 25px rgba(0, 255, 255, 0.4),
+    0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.clickable-tag:focus {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.clickable-tag:active {
+  transform: translateY(0) scale(1.02);
+}
+
+.clickable-meme-tag {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+  border-radius: 12px;
+  padding: 4px 8px;
+  margin: 2px;
+  display: inline-block;
+}
+
+.clickable-meme-tag:hover {
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+  color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+}
+
+.clickable-meme-tag:focus {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.clickable-meme-tag:active {
+  transform: translateY(0);
+}
+
+/* Enhanced tag cards for better interactivity */
+.tag-card.clickable-tag {
+  user-select: none;
+}
+
+.tag-card.clickable-tag:hover .tag-name {
+  color: var(--neon-cyan);
+}
+
+.tag-card.clickable-tag:hover .tag-icon {
+  color: var(--neon-pink);
+  transform: rotate(45deg);
+}
+
+/* Mobile optimization for clickable tags */
+@media (max-width: 768px) {
+  .clickable-tag:hover {
+    transform: scale(1.02);
+  }
+  
+  .clickable-meme-tag:hover {
+    transform: none;
+    background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+    color: #000;
+  }
+}
+
+/* Add visual feedback for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .clickable-tag:active {
+    transform: scale(0.98);
+    background: rgba(0, 255, 255, 0.1);
+  }
+  
+  .clickable-meme-tag:active {
+    background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-pink) 100%);
+    color: #000;
+  }
+}

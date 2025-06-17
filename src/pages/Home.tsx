@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { TrendingUp, Zap, Sparkles, ArrowRight, Heart, Download, Share } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './Home.css';
@@ -20,12 +20,19 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
   const [trendingMemes, setTrendingMemes] = useState<Meme[]>([]);
   const [popularTags, setPopularTags] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch trending memes and popular tags
     fetchTrendingMemes();
     fetchPopularTags();
   }, []);
+
+  // Handle tag click to navigate to explore page with search
+  const handleTagClick = (tag: string) => {
+    // Navigate to explore page with the tag as search query
+    navigate(`/explore?q=${encodeURIComponent(tag)}`);
+  };
 
   const handleUpvote = async (memeId: string) => {
     try {
@@ -303,7 +310,7 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
         </div>
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title" >
+            <h1 className="hero-title">
               <span className="neon-text-cyan">NEON-DRENCHED</span>
               <br />
               <span className="neon-text-pink">MEME MARKETPLACE</span>
@@ -331,7 +338,19 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
           <h2 className="section-title neon-text-purple">Popular Tags</h2>
           <div className="tags-grid">
             {popularTags.map((tag, index) => (
-              <div key={index} className="tag-card">
+              <div 
+                key={index} 
+                className="tag-card clickable-tag" 
+                onClick={() => handleTagClick(tag)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleTagClick(tag);
+                  }
+                }}
+              >
                 <span className="tag-name">#{tag}</span>
                 <Zap className="tag-icon" size={16} />
               </div>
@@ -383,7 +402,21 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
                   <h3 className="meme-title">{meme.title}</h3>
                   <div className="meme-tags">
                     {meme.tags.slice(0, 3).map((tag, index) => (
-                      <span key={index} className="meme-tag">#{tag}</span>
+                      <span 
+                        key={index} 
+                        className="meme-tag clickable-meme-tag"
+                        onClick={() => handleTagClick(tag)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleTagClick(tag);
+                          }
+                        }}
+                      >
+                        #{tag}
+                      </span>
                     ))}
                   </div>
                 </div>
