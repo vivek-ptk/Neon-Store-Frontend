@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Zap, Sparkles, ArrowRight } from 'lucide-react';
+import { TrendingUp, Zap, Sparkles, ArrowRight, Heart, Download, Share } from 'lucide-react';
+import toast from 'react-hot-toast';
 import './Home.css';
 
 interface Meme {
@@ -25,6 +26,174 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
     fetchTrendingMemes();
     fetchPopularTags();
   }, []);
+
+  const handleUpvote = async (memeId: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/upvote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ memeId }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upvote');
+      }
+
+      if (data.success) {
+        // Update local state
+        setTrendingMemes(trendingMemes.map(meme => 
+          meme.id === memeId 
+            ? { ...meme, upvotes: data.meme?.upvotes || meme.upvotes + 1 }
+            : meme
+        ));
+        toast.success('Meme upvoted! 💖');
+      }
+    } catch (error) {
+      console.error('Error upvoting:', error);
+      // Still update locally if API fails
+      setTrendingMemes(trendingMemes.map(meme => 
+        meme.id === memeId 
+          ? { ...meme, upvotes: meme.upvotes + 1 }
+          : meme
+      ));
+      toast.success('Upvoted! ❤️');
+    }
+  };
+
+  const handleDownload = async (meme: Meme) => {
+    try {
+      // Track download with API first
+      const response = await fetch('http://localhost:5000/api/track-downloads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memeId: meme.id
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to track download');
+      }
+
+      // Download the image to local device
+      try {
+        // Fetch the image as a blob
+        const imageResponse = await fetch(meme.image_url);
+        const imageBlob = await imageResponse.blob();
+        
+        // Create a download link
+        const downloadUrl = URL.createObjectURL(imageBlob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        // Get file extension from URL or default to jpg
+        const urlParts = meme.image_url.split('.');
+        const extension = urlParts.length > 1 ? urlParts[urlParts.length - 1].split('?')[0] : 'jpg';
+        
+        link.download = `${meme.title.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')}.${extension}`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the object URL
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast.success('Meme downloaded! 📱');
+      } catch (downloadError) {
+        console.error('Error downloading image:', downloadError);
+        toast.error('Failed to download image');
+        return;
+      }
+      
+      if (data.success) {
+        // Update download count with API response or increment locally
+        setTrendingMemes(trendingMemes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: data.meme?.downloads || m.downloads + 1 }
+            : m
+        ));
+      } else {
+        // Still update locally if API tracking fails but download succeeded
+        setTrendingMemes(trendingMemes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        ));
+      }
+    } catch (error) {
+      console.error('Error tracking download:', error);
+      
+      // Still allow download even if tracking fails
+      try {
+        // Fetch the image as a blob
+        const imageResponse = await fetch(meme.image_url);
+        const imageBlob = await imageResponse.blob();
+        
+        // Create a download link
+        const downloadUrl = URL.createObjectURL(imageBlob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        // Get file extension from URL or default to jpg
+        const urlParts = meme.image_url.split('.');
+        const extension = urlParts.length > 1 ? urlParts[urlParts.length - 1].split('?')[0] : 'jpg';
+        
+        link.download = `${meme.title.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_-]/g, '')}.${extension}`;
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up the object URL
+        URL.revokeObjectURL(downloadUrl);
+        
+        toast.success('Downloaded! 📱');
+        
+        // Update local count since tracking failed
+        setTrendingMemes(trendingMemes.map(m => 
+          m.id === meme.id 
+            ? { ...m, downloads: m.downloads + 1 }
+            : m
+        ));
+      } catch (downloadError) {
+        console.error('Error downloading meme:', downloadError);
+        toast.error('Failed to download meme');
+      }
+    }
+  };
+
+  const handleShare = async (meme: Meme) => {
+    try {
+      if (navigator.share) {
+        // Use native share API if available
+        await navigator.share({
+          title: meme.title,
+          text: `Check out this awesome meme: ${meme.title}`,
+          url: window.location.href
+        });
+        toast.success('Shared successfully! 🚀');
+      } else {
+        // Fallback to clipboard copy
+        const shareText = `Check out this awesome meme: ${meme.title} - ${window.location.href}`;
+        await navigator.clipboard.writeText(shareText);
+        toast.success('Link copied to clipboard! 📋');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast.error('Failed to share meme');
+    }
+  };
 
   const fetchTrendingMemes = async () => {
     try {
@@ -186,15 +355,27 @@ const Home: React.FC<HomeProps> = ({ onOpenMemeCreator }) => {
                 <div className="meme-image-container">
                   <img src={meme.image_url} alt={meme.title} className="meme-image" />
                   <div className="meme-overlay">
-                    <div className="meme-stats">
-                      <span className="stat">
-                        <TrendingUp size={14} />
+                    <div className="meme-actions">
+                      <button 
+                        className="action-btn upvote-btn"
+                        onClick={() => handleUpvote(meme.id)}
+                      >
+                        <Heart size={18} />
                         {meme.upvotes}
-                      </span>
-                      <span className="stat">
-                        <Zap size={14} />
+                      </button>
+                      <button 
+                        className="action-btn download-btn"
+                        onClick={() => handleDownload(meme)}
+                      >
+                        <Download size={18} />
                         {meme.downloads}
-                      </span>
+                      </button>
+                      <button 
+                        className="action-btn share-btn"
+                        onClick={() => handleShare(meme)}
+                      >
+                        <Share size={18} />
+                      </button>
                     </div>
                   </div>
                 </div>
