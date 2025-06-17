@@ -546,8 +546,8 @@ const Explore: React.FC = () => {
               <div className="memes-grid">
                 {memes.map((meme, index) => (
                   <div key={meme.id} className="meme-card" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div className="meme-image-container">
-                      <img src={meme.image_url} alt={meme.title} className="meme-image" />
+                    <div className="meme-image-container" style={{display:"flex", justifyContent:"center", alignItems:"center"}}>
+                      <img src={meme.image_url} alt={meme.title} style={{aspectRatio:"auto", width:"100%", maxHeight:"100%"}} />
                       <div className="meme-overlay">
                       <div className="meme-actions">
                         <button 
