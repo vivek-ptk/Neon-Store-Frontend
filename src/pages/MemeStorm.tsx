@@ -280,6 +280,7 @@ const MemeStorm: React.FC = () => {
                 className="message-input"
                 rows={2}
                 disabled={isLoading}
+                style={{ resize: 'none' }}
               />
               <button
                 type="submit"
